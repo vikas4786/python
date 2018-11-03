@@ -1,0 +1,6 @@
+set number
+set et ts=2 ai sw=2 nu
+set tabstop=4
+colorscheme desert
+set cursorline
+set list lcs=tab:\|\ 
