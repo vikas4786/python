@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import boto3
 import json
 import logging
@@ -40,9 +41,12 @@ class aws_vpc:
 		subnet = self.ec2.create_subnet(CidrBlock=v_subnetcidr, VpcId=self.v_vpc.id)
 		subnet.create_tags(Tags=[{"Key":"Name","Value":v_subnetname}])
 	def igw_create(self):
-	   	v_igw=self.v_data["aws_vpc"]["igw"]["Igwname"]
-		print v_igw 
+	   	v_igwname=self.v_data["aws_vpc"]["igw"]["Igwname"]
+        	logging.info("create igw ..")
+		self.v_igw=self.ec2.create_internet_gateway()
+		self.v_igw.create_tags(Tags=[{"Key":"Name","Value":v_igwname}])
+		logging.info("igw created successfully")
 s=aws_vpc()
 s.vpc_create()
-#s.subnet_create()
-#s.igw_create()
+s.subnet_create()
+s.igw_create()
