@@ -4,16 +4,20 @@
 						"vpcname":"client_1",
 						"vpccidr":"192.168.122.0/24"
 				},
-                "subnet":{
-                        "subnet1":{
-                                "sub_name":"client_1_subnet1",
-                                "private":"True",
-                                "sub_cidr":"192.168.122.0/27"
-                },
-                         "subnet2":{
-                                "sub_name":"client_1_pubsubnet1",
-                                "private":"False",
-                                "sub_cidr":"192.168.122.32/27"
+				"igw":{
+				      "Igwname": "client_1_igw",
+				      "VpcId":""
+				},
+                		"subnet":{
+                        		"subnet1":{
+                                	"sub_name":"client_1_prisubnet1",
+                                	"private":"True",
+                                	"sub_cidr":"192.168.122.0/27"
+                		},
+                         		"subnet2":{
+                                	"sub_name":"client_1_pubsubnet1",
+                                	"private":"False",
+                                	"sub_cidr":"192.168.122.32/27"
                 }
 		          }
 		}
