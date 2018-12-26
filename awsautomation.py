@@ -51,8 +51,19 @@ class aws_vpc:
 		self.v_vpc.attach_internet_gateway(InternetGatewayId=self.v_igw.id)
 		time.sleep(5)
 		logging.info("igw attach to vpc successfully..")
+	def route_create(self):
+		self.route_list=[]
+		for v_router in self.v_data["aws_vpc"]["router"].keys():
+			v_rname=self.v_data["aws_vpc"]["router"][v_router]["router_name"]
+			logging.info("creating route table..")
+			route_table=self.ec2.create_route_table(DryRun=False,VpcId=self.v_vpc.id)
+			route_table.create_tags(Tags=[{'key':'Name','Value':v_rname}])
+			self.route_list.append(route_table)
+			logging.info("{} route table created successfully".format(v_rname))
+		
 s=aws_vpc()
 s.vpc_create()
 s.subnet_create()
 s.igw_create()
 s.attach_igw()
+s.route_create()

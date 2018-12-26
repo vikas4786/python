@@ -18,7 +18,18 @@
                                 	"sub_name":"client_1_pubsubnet1",
                                 	"private":"False",
                                 	"sub_cidr":"192.168.122.32/27"
-                }
-		          }
-		}
-}
+                		}},
+				"router":{
+					"router1":{
+						"vpcId":"",
+						"router_name": "router1_client",
+						"private": "True"
+					},
+					"router2":{
+						"VpcId":"",
+						"router_name": "route1_cleint",
+						"private":"False"
+					}
+		          	        }}
+}	
+
