@@ -46,7 +46,13 @@ class aws_vpc:
 		self.v_igw=self.ec2.create_internet_gateway()
 		self.v_igw.create_tags(Tags=[{"Key":"Name","Value":v_igwname}])
 		logging.info("igw created successfully")
+	def attach_igw(self):
+		logging.info("attaching igw with vpc..")
+		self.v_vpc.attach_internet_gateway(InternetGatewayId=self.v_igw.id)
+		time.sleep(5)
+		logging.info("igw attach to vpc successfully..")
 s=aws_vpc()
 s.vpc_create()
 s.subnet_create()
 s.igw_create()
+s.attach_igw()
