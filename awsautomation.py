@@ -20,6 +20,7 @@ class aws_vpc:
             v_vpcname=self.v_data["aws_vpc"]["vpc"]["vpcname"]
             v_vpccidr=self.v_data["aws_vpc"]["vpc"]["vpccidr"]
             logging.info("checking if vpc already exists")
+	    time.sleep(2)
 	    vpc_obj=boto3.client("ec2")
             v_vpc_info=vpc_obj.describe_vpcs()
 	    v_flag=False
@@ -33,12 +34,14 @@ class aws_vpc:
 		exit(123)
             self.v_vpc=self.ec2.create_vpc(CidrBlock=v_vpccidr)
             self.v_vpc.create_tags(Tags=[{"Key":"Name","Value":v_vpcname}])
+            print ( "vpc created successfully with id {}".format(self.v_vpc))
             
         def subnet_create(self):
 	    for v_sub in self.v_data["aws_vpc"]["subnet"]:
 		v_subnetname=self.v_data["aws_vpc"]["subnet"][v_sub]["sub_name"]
 		v_subnetcidr=self.v_data["aws_vpc"]["subnet"][v_sub]["sub_cidr"]
 		subnet = self.ec2.create_subnet(CidrBlock=v_subnetcidr, VpcId=self.v_vpc.id)
+                print ( "subnet created successfully with id {}".format(subnet))
 		subnet.create_tags(Tags=[{"Key":"Name","Value":v_subnetname}])
 	def igw_create(self):
 	   	v_igwname=self.v_data["aws_vpc"]["igw"]["Igwname"]
@@ -57,8 +60,9 @@ class aws_vpc:
 			v_rname=self.v_data["aws_vpc"]["router"][v_router]["router_name"]
 			logging.info("creating route table..")
 			route_table=self.ec2.create_route_table(DryRun=False,VpcId=self.v_vpc.id)
-			route_table.create_tags(Tags=[{'key':'Name','Value':v_rname}])
+			route_table.create_tags(Tags=[{'Key':'Name','Value':v_rname}])
 			self.route_list.append(route_table)
+			print self.route_list
 			logging.info("{} route table created successfully".format(v_rname))
 		
 s=aws_vpc()
