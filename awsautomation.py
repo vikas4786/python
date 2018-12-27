@@ -40,9 +40,9 @@ class aws_vpc:
 	    for v_sub in self.v_data["aws_vpc"]["subnet"]:
 		v_subnetname=self.v_data["aws_vpc"]["subnet"][v_sub]["sub_name"]
 		v_subnetcidr=self.v_data["aws_vpc"]["subnet"][v_sub]["sub_cidr"]
-		subnet = self.ec2.create_subnet(CidrBlock=v_subnetcidr, VpcId=self.v_vpc.id)
-                print ( "subnet created successfully with id {}".format(subnet))
-		subnet.create_tags(Tags=[{"Key":"Name","Value":v_subnetname}])
+		self.subnet = self.ec2.create_subnet(CidrBlock=v_subnetcidr, VpcId=self.v_vpc.id)
+                print ( "subnet created successfully with id {}".format(self.subnet.id))
+		self.subnet.create_tags(Tags=[{"Key":"Name","Value":v_subnetname}])
 	def igw_create(self):
 	   	v_igwname=self.v_data["aws_vpc"]["igw"]["Igwname"]
         	logging.info("create igw ..")
@@ -64,10 +64,20 @@ class aws_vpc:
 			self.route_list.append(route_table)
 			print self.route_list
 			logging.info("{} route table created successfully".format(v_rname))
-		
+	def create_eip(self):
+	        self.Ec2_Eip=boto3.client('ec2')
+        	self.V_Eip=self.Ec2_Eip.allocate_address(Domain=self.v_vpc.id)
+	def create_natgw(self):
+        #nat_gw = client.create_nat_gateway(SubnetId=subnet1.id,AllocationId=eip.id)
+        	self.natgw=self.Ec2_Eip.create_nat_gateway(SubnetId=self.subnet.id,AllocationId=self.V_Eip['AllocationId'])
+        	print self.natgw
+
+
 s=aws_vpc()
 s.vpc_create()
 s.subnet_create()
-s.igw_create()
-s.attach_igw()
+#s.igw_create()
+#s.attach_igw()
 s.route_create()
+s.create_eip()
+s.create_natgw()
