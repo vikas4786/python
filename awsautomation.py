@@ -67,17 +67,42 @@ class aws_vpc:
 	def create_eip(self):
 	        self.Ec2_Eip=boto3.client('ec2')
         	self.V_Eip=self.Ec2_Eip.allocate_address(Domain=self.v_vpc.id)
+		print("elastic ip created sucessfully with id{}".format(self,V_Eip.id))
+		time.sleep(3)
 	def create_natgw(self):
         #nat_gw = client.create_nat_gateway(SubnetId=subnet1.id,AllocationId=eip.id)
         	self.natgw=self.Ec2_Eip.create_nat_gateway(SubnetId=self.subnet.id,AllocationId=self.V_Eip['AllocationId'])
-        	print self.natgw
-
+		logging.info("NATGATEWAY created successfully")
+		time.sleep(5)
+        	print self.natgw.id
+	def associate_route(self):
+		logging.info("associating route tables to subnet")
+		pub_router1=""
+		sub_router1=""
+		pub_router2=""
+		sub_router2=""
+		for key,value in self.v_data["aws_vpc"].iteritems():
+			if key == 'router':
+ 				pub_router1 = value['router1']['private']
+ 				pub_router2 = value['router2']['private']
+			if key == 'subnet':
+ 				sub_router1 = value['subnet1']['private']
+ 				sub_router2 = value['subnet2']['private']
+			if pub_router1 and sub_router1 and pub_router1 == "True":
+				
+			if pub_router2 and sub_router2 and pub_router2 == "False":
+				print pub_router2
+			#	route_table.associate_with_subnet(SubnetId=subnet.id)
+#			self.v_routertype=self.v_data["aws_vpc"]["router"]["v_router"]["private"]
+#			self.v_subnettype=self.v_router["aws_vpc"]["subnet"]
+		
 
 s=aws_vpc()
-s.vpc_create()
-s.subnet_create()
+#s.vpc_create()
+#s.subnet_create()
 #s.igw_create()
 #s.attach_igw()
-s.route_create()
-s.create_eip()
-s.create_natgw()
+#s.route_create()
+#s.create_eip()
+#s.create_natgw()
+s.associate_route()

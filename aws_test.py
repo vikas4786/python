@@ -1,3 +1,4 @@
+#!/usr/bin/env	python
 #d['Reservations'][0]['Instances'][0]['PrivateIpAddress']
 import boto3
 import logging
