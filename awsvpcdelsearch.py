@@ -33,4 +33,4 @@ class aws_vpcd():
 s=aws_vpcd()
 s.vpc()
 s.aws_vpcfile()
-s.aws_igwsearch()
+#s.aws_igwsearch()

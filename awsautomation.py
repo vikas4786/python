@@ -59,8 +59,8 @@ class aws_vpc:
 		for v_router in self.v_data["aws_vpc"]["router"].keys():
 			v_rname=self.v_data["aws_vpc"]["router"][v_router]["router_name"]
 			logging.info("creating route table..")
-			route_table=self.ec2.create_route_table(DryRun=False,VpcId=self.v_vpc.id)
-			route_table.create_tags(Tags=[{'Key':'Name','Value':v_rname}])
+			self.route_table=self.ec2.create_route_table(DryRun=False,VpcId=self.v_vpc.id)
+			self.route_table.create_tags(Tags=[{'Key':'Name','Value':v_rname}])
 			self.route_list.append(route_table)
 			print self.route_list
 			logging.info("{} route table created successfully".format(v_rname))
@@ -89,7 +89,12 @@ class aws_vpc:
  				sub_router1 = value['subnet1']['private']
  				sub_router2 = value['subnet2']['private']
 			if pub_router1 and sub_router1 and pub_router1 == "True":
-				
+				print pub_router1
+				v_sub=boto3.client("ec2")
+				v_subnet=v_sub.describe_subnets()
+				for v_sub_check in range(len(v_subnet["Subnets"])):
+					state=v_subnet["Subnets"][v_sub_check]["Tags"][0]["Value"]
+					print state
 			if pub_router2 and sub_router2 and pub_router2 == "False":
 				print pub_router2
 			#	route_table.associate_with_subnet(SubnetId=subnet.id)
@@ -98,8 +103,8 @@ class aws_vpc:
 		
 
 s=aws_vpc()
-#s.vpc_create()
-#s.subnet_create()
+s.vpc_create()
+s.subnet_create()
 #s.igw_create()
 #s.attach_igw()
 #s.route_create()
