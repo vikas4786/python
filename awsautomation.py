@@ -36,13 +36,16 @@ class aws_vpc:
             self.v_vpc.create_tags(Tags=[{"Key":"Name","Value":v_vpcname}])
             print ( "vpc created successfully with id {}".format(self.v_vpc))
             
-        def subnet_create(self):
-	    for v_sub in self.v_data["aws_vpc"]["subnet"]:
-		v_subnetname=self.v_data["aws_vpc"]["subnet"][v_sub]["sub_name"]
-		v_subnetcidr=self.v_data["aws_vpc"]["subnet"][v_sub]["sub_cidr"]
-		self.subnet = self.ec2.create_subnet(CidrBlock=v_subnetcidr, VpcId=self.v_vpc.id)
+	def subnet_create(self):
+	    self.subnet_list=[]
+            for v_sub in self.v_data["aws_vpc"]["subnet"]:
+               	v_subnetname=self.v_data["aws_vpc"]["subnet"][v_sub]["sub_name"]
+            	v_subnetcidr=self.v_data["aws_vpc"]["subnet"][v_sub]["sub_cidr"]
+                self.subnet = self.ec2.create_subnet(CidrBlock=v_subnetcidr, VpcId=self.v_vpc.id)
                 print ( "subnet created successfully with id {}".format(self.subnet.id))
-		self.subnet.create_tags(Tags=[{"Key":"Name","Value":v_subnetname}])
+                self.subnet.create_tags(Tags=[{"Key":"Name","Value":v_subnetname}])
+		self.subnet_list.append(self.subnet.id)
+	        print self.subnet_list
 	def igw_create(self):
 	   	v_igwname=self.v_data["aws_vpc"]["igw"]["Igwname"]
         	logging.info("create igw ..")
@@ -61,9 +64,10 @@ class aws_vpc:
 			logging.info("creating route table..")
 			self.route_table=self.ec2.create_route_table(DryRun=False,VpcId=self.v_vpc.id)
 			self.route_table.create_tags(Tags=[{'Key':'Name','Value':v_rname}])
-			self.route_list.append(route_table)
+			self.route_list.append(self.route_table)
 			print self.route_list
 			logging.info("{} route table created successfully".format(v_rname))
+		 	s.associate_route()
 	def create_eip(self):
 	        self.Ec2_Eip=boto3.client('ec2')
         	self.V_Eip=self.Ec2_Eip.allocate_address(Domain=self.v_vpc.id)
@@ -89,12 +93,20 @@ class aws_vpc:
  				sub_router1 = value['subnet1']['private']
  				sub_router2 = value['subnet2']['private']
 			if pub_router1 and sub_router1 and pub_router1 == "True":
-				print pub_router1
+			#	print pub_router1
 				v_sub=boto3.client("ec2")
 				v_subnet=v_sub.describe_subnets()
 				for v_sub_check in range(len(v_subnet["Subnets"])):
 					state=v_subnet["Subnets"][v_sub_check]["Tags"][0]["Value"]
 					print state
+					state_id=v_subnet["Subnets"][v_sub_check]['SubnetId']
+					print state_id
+					if state == "client_1_pubsubnet1" :
+					   logging.info ("associating public subnet to public route")
+					   for route_id in self.route_list:
+					       print route_id
+				  	          #self.route_table.associate_with_subnet(RouteTableId='string',SubnetId=state_id)
+						
 			if pub_router2 and sub_router2 and pub_router2 == "False":
 				print pub_router2
 			#	route_table.associate_with_subnet(SubnetId=subnet.id)
@@ -107,7 +119,7 @@ s.vpc_create()
 s.subnet_create()
 #s.igw_create()
 #s.attach_igw()
-#s.route_create()
+s.route_create()
 #s.create_eip()
 #s.create_natgw()
-s.associate_route()
+#s.associate_route()
